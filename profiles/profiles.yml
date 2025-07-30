@@ -1,0 +1,29 @@
+chinook_project:
+  target: dev # Default environment
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('DB_HOST') }}"
+      port: "{{ env_var('DB_PORT') | as_number }}" # Converts string to number
+      user: "{{ env_var('DB_USER') }}"
+      password: "{{ env_var('DB_PASSWORD') }}"
+      dbname: "{{ env_var('DB_NAME') }}" # chinook database
+
+      # Schema for dbt models (analytical layer)
+      schema: "{{ env_var('ANALYTICAL_SCHEMA') }}" # analytics
+
+      # Search path for sources (transactional schema first)
+      search_path:
+        [
+          "{{ env_var('TRANSACTIONAL_SCHEMA') }}",
+          "{{ env_var('ANALYTICAL_SCHEMA') }}",
+          "public",
+        ]
+
+      threads: 4
+      keepalives_idle: 0 # For connection stability
+
+      # Optional performance tuning
+      retries: 1
+      connect_timeout: 10
+      role: null # Set if using role switching
