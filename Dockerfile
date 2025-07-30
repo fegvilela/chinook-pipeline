@@ -44,13 +44,17 @@ RUN apt-get update \
 # Env vars
 ENV PYTHONIOENCODING=utf-8
 ENV LANG=C.UTF-8
+ENV PROJECT_DIR=${CONTAINER_PROJECT_DIR}
 
 # Update python
 RUN python -m pip install --upgrade pip setuptools wheel --no-cache-dir
 
 # Set docker basics
-WORKDIR /usr/app/dbt/
-ENTRYPOINT ["dbt"]
+WORKDIR ${PROJECT_DIR}
+
+# Copy entrypoint and grant permissions
+COPY ./scripts/entrypoint.sh ${PROJECT_DIR}/scripts/
+RUN chmod +x ${PROJECT_DIR}/scripts/entrypoint.sh
 
 ##
 # dbt-core

@@ -1,19 +1,24 @@
 version: "3"
 services:
   dbt:
+    container_name: dbt-chinook
     image: dbt-apple:latest
     volumes:
-      - .:/usr/app/dbt # Mapeia o diretório atual para /usr/app/dbt no container
-      - ./target:/usr/app/dbt/target # Persiste o diretório target
-      - ./dbt_packages:/usr/app/dbt/dbt_packages # Persiste pacotes instalados
-      - ./logs:/usr/app/dbt/logs # Persiste logs
+      - .:${CONTAINER_PROJECT_DIR}
+    env_file:
+      - .env
     environment:
-      - DBT_PROFILES_DIR=/usr/app/dbt
-    working_dir: /usr/app/dbt
+      - DBT_PROFILES_DIR=${CONTAINER_PROJECT_DIR}/profiles
     networks:
       - dbt-network
     ports:
       - "8080:8080" # docs
+    entrypoint: ["${CONTAINER_PROJECT_DIR}/scripts/entrypoint.sh"]
+    # command: |
+    #   sh -c "
+    #   dbt init chinook_analytics --skip-profile-setup
+    #   tail -f /dev/null
+    #   "
 
 networks:
   dbt-network:

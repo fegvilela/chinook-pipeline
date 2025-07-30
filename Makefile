@@ -1,13 +1,25 @@
 # Makefile for dbt project with Docker (Chinook -> Analytics)
 
 # Variables
-PROJECT_NAME := chinook_analytics
+# Carrega as variáveis do .env (se existir)
+ifneq (,$(wildcard ./.env))
+    include .env
+    export $(shell sed 's/=.*//' .env)
+endif
+
 DOCKER_COMPOSE := docker-compose
 DBT_SERVICE := dbt
-PROFILES_DIR := $(shell pwd)
+PROFILES_DIR := $(shell pwd)/profiles
 
 # Main commands
 .PHONY: init run test docs serve clean debug
+
+setup:
+	@echo "Setting up Docker image and permissions for apple-silicon..."
+	chmod +x scripts/entrypoint.sh
+	docker build --tag dbt-apple --target dbt-postgres . --platform linux/arm64/v8
+	$(DOCKER_COMPOSE) up -d
+	@echo "✅ Setup is done!"
 
 # Initialize a new dbt project
 init:
