@@ -1,0 +1,20 @@
+version: "3"
+services:
+  dbt:
+    image: dbt-apple:latest
+    volumes:
+      - .:/usr/app/dbt # Mapeia o diretório atual para /usr/app/dbt no container
+      - ./target:/usr/app/dbt/target # Persiste o diretório target
+      - ./dbt_packages:/usr/app/dbt/dbt_packages # Persiste pacotes instalados
+      - ./logs:/usr/app/dbt/logs # Persiste logs
+    environment:
+      - DBT_PROFILES_DIR=/usr/app/dbt
+    working_dir: /usr/app/dbt
+    networks:
+      - dbt-network
+    ports:
+      - "8080:8080" # docs
+
+networks:
+  dbt-network:
+    driver: bridge
