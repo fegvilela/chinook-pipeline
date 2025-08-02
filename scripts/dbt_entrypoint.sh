@@ -8,16 +8,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PARENT_DIR="$(dirname "$SCRIPT_DIR")"
 PROJECT_NAME="${PROJECT_NAME}"
 
-# Load .env from parent directory if exists
-if [ -f "${PARENT_DIR}/.env" ]; then
-    echo "🔵 Loading .env from ${PARENT_DIR}/.env"
-    export $(grep -v '^#' "${PARENT_DIR}/.env" | xargs)
-else
-    echo "🟡 Warning: No .env file found in ${PARENT_DIR}"
-fi
-
 # Set default if PROJECT_DIR not defined
-export PROJECT_DIR="${CONTAINER_PROJECT_DIR}"
+export PROJECT_DIR="${CONTAINER_PROJECT_DIR}"/"${PROJECT_NAME}"
 
 main() {
     echo "🟢 Starting in PROJECT_DIR: ${PROJECT_DIR}"

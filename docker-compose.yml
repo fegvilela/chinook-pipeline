@@ -5,17 +5,22 @@ services:
     restart: always
     volumes:
       - ./dbt:${CONTAINER_PROJECT_DIR}
-      - ./scripts:${CONTAINER_PROJECT_DIR}/scripts
-      - .env/:${CONTAINER_PROJECT_DIR}/.env
-    env_file:
-      - .env
     environment:
-      - DBT_PROFILES_DIR=${CONTAINER_PROJECT_DIR}/profiles
+      - DBT_PROFILES_DIR=${CONTAINER_PROJECT_DIR}/${PROJECT_NAME}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - TRANSACTIONAL_SCHEMA=${TRANSACTIONAL_SCHEMA}
+      - ANALYTICAL_SCHEMA=${ANALYTICAL_SCHEMA}
+      - CONTAINER_PROJECT_DIR=${CONTAINER_PROJECT_DIR}
+      - PROJECT_NAME=${PROJECT_NAME}
     networks:
       - dbt_dagster_network
     ports:
       - "8080:8080" # docs
-    entrypoint: ["${CONTAINER_PROJECT_DIR}/scripts/entrypoint.sh"]
+    entrypoint: ["${CONTAINER_PROJECT_DIR}/scripts/dbt_entrypoint.sh"]
 
   # This service runs the postgres DB used by dagster for run storage, schedule storage,
   # and event log storage. Depending on the hardware you run this Compose on, you may be able

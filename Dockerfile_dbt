@@ -16,13 +16,7 @@ FROM --platform=$build_for python:3.10.7-slim-bullseye as base
 # N.B. The refs updated automagically every release via bumpversion
 ARG dbt_core_ref=dbt-core@main
 ARG dbt_postgres_ref=dbt-postgres@main
-ARG dbt_redshift_ref=dbt-redshift@main
-ARG dbt_bigquery_ref=dbt-bigquery@main
-ARG dbt_snowflake_ref=dbt-snowflake@main
-ARG dbt_spark_ref=dbt-spark@main
-# special case args
-ARG dbt_spark_version=all
-ARG dbt_third_party
+
 
 # System setup
 RUN apt-get update \
@@ -53,8 +47,8 @@ RUN python -m pip install --upgrade pip setuptools wheel --no-cache-dir
 WORKDIR ${PROJECT_DIR}
 
 # Copy entrypoint and grant permissions
-COPY ./scripts/entrypoint.sh ${PROJECT_DIR}/scripts/
-RUN chmod +x ${PROJECT_DIR}/scripts/entrypoint.sh
+COPY ./dbt/scripts/ ${PROJECT_DIR}/scripts/
+RUN chmod +x scripts/dbt_entrypoint.sh
 
 ##
 # dbt-core
