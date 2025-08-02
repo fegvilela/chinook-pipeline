@@ -8,8 +8,11 @@ ifneq (,$(wildcard ./.env))
 endif
 
 DOCKER_COMPOSE := docker-compose
-DBT_SERVICE := dbt
+DBT_SERVICE := dbt_chinook
+DAGSTER_SERVICE := dagster_user_code
 PROFILES_DIR := $(shell pwd)/profiles
+DAGSTER_PROJECT_NAME := dagster_chinook
+DBT_DIR := ../dbt/chinook_analytics
 
 # Main commands
 .PHONY: init run test docs serve clean debug
@@ -17,7 +20,8 @@ PROFILES_DIR := $(shell pwd)/profiles
 setup:
 	@echo "Setting up Docker image and permissions for apple-silicon..."
 	chmod +x scripts/entrypoint.sh
-	docker build --tag dbt-apple --target dbt-postgres . --platform linux/arm64/v8
+	docker build --tag dbt_chinook_image --target dbt-postgres . --platform linux/arm64/v8 --file Dockerfile_dbt
+	docker compose build dagster_user_code
 	$(DOCKER_COMPOSE) up -d
 	@echo "✅ Setup is done!"
 
@@ -67,6 +71,9 @@ rebuild:
 # Access container for interactive commands
 shell:
 	$(DOCKER_COMPOSE) run --rm $(DBT_SERVICE) /bin/bash
+
+dagster-init:
+	$(DOCKER_COMPOSE) exec $(DAGSTER_SERVICE) sh -c "dagster-dbt project scaffold --project-name $(DAGSTER_PROJECT_NAME) --dbt-project-dir $(DBT_DIR)"
 
 # List all available commands
 help:
