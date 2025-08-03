@@ -4,6 +4,7 @@
 
 ## db
 yugabyte*/**
+*.crt
 
 ### dbt ###
 target/

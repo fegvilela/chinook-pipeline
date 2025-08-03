@@ -16,6 +16,7 @@ services:
       - ANALYTICAL_SCHEMA=${ANALYTICAL_SCHEMA}
       - CONTAINER_PROJECT_DIR=${CONTAINER_PROJECT_DIR}
       - PROJECT_NAME=${PROJECT_NAME}
+      - ROOT_CERT_PATH=${ROOT_CERT_PATH}
     networks:
       - dbt_dagster_network
     ports:
