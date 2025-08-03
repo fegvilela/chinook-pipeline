@@ -1,0 +1,253 @@
+version: 2
+
+sources:
+  - name: chinook
+    database: chinook
+    description: "PostgreSQL database for Chinook digital music store, containing complete sales, inventory, and customer data"
+    tables:
+      - name: artist
+        description: "Musical artists and bands available in the store"
+        identifier: "Artist"
+        columns:
+          - name: artist_id
+            description: "Primary key, unique identifier for each artist"
+            identifier: "ArtistId"
+          - name: name
+            description: "Name of the artist/band"
+            identifier: "Name"
+
+      - name: album
+        description: "Music albums released by artists, available for purchase"
+        identifier: "Album"
+        columns:
+          - name: album_id
+            description: "Primary key, unique identifier for each album"
+            identifier: "AlbumId"
+          - name: title
+            description: "Name of the album"
+            identifier: "Title"
+          - name: artist_id
+            description: "Foreign key referencing artist.artist_id"
+            identifier: "ArtistId"
+
+      - name: track
+        description: "Individual music tracks/songs available for purchase"
+        identifier: "Track"
+        columns:
+          - name: track_id
+            description: "Primary key, unique identifier for each track"
+            identifier: "TrackId"
+          - name: name
+            description: "Title of the track/song"
+            identifier: "Name"
+          - name: album_id
+            description: "Foreign key referencing album.album_id"
+            identifier: "AlbumId"
+          - name: media_type_id
+            description: "Foreign key referencing media_type.media_type_id"
+            identifier: "MediaTypeId"
+          - name: genre_id
+            description: "Foreign key referencing genre.genre_id"
+            identifier: "GenreId"
+          - name: composer
+            description: "Person/people who composed the track"
+            identifier: "Composer"
+          - name: milliseconds
+            description: "Duration of track in milliseconds"
+            identifier: "Milliseconds"
+          - name: bytes
+            description: "Storage size of track in bytes"
+            identifier: "Bytes"
+          - name: unit_price
+            description: "Price per track in USD"
+            identifier: "UnitPrice"
+
+      - name: media_type
+        description: "Format/medium of the music track (digital/physical)"
+        identifier: "MediaType"
+        columns:
+          - name: media_type_id
+            description: "Primary key, unique identifier for media format"
+            identifier: "MediaTypeId"
+          - name: name
+            description: "Format name"
+            identifier: "Name"
+
+      - name: playlist
+        description: "User-created collections of tracks"
+        identifier: "Playlist"
+        columns:
+          - name: playlist_id
+            description: "Primary key, unique identifier for playlist"
+            identifier: "PlaylistId"
+          - name: name
+            description: "User-defined name for the playlist"
+            identifier: "Name"
+
+      - name: playlist_track
+        description: "Junction table linking playlists to their tracks"
+        identifier: "PlaylistTrack"
+        columns:
+          - name: playlist_id
+            description: "Composite primary key, references playlist.playlist_id"
+            identifier: "PlaylistId"
+          - name: track_id
+            description: "Composite primary key, references track.track_id"
+            identifier: "TrackId"
+
+      - name: genre
+        description: "Musical genre classification for tracks"
+        identifier: "Genre"
+        columns:
+          - name: genre_id
+            description: "Primary key, unique identifier for genre"
+            identifier: "GenreId"
+          - name: name
+            description: "Genre name"
+            identifier: "Name"
+
+      - name: employee
+        description: "Store staff members and their organizational structure"
+        identifier: "Employee"
+        columns:
+          - name: employee_id
+            description: "Primary key, unique identifier for employee"
+            identifier: "EmployeeId"
+          - name: last_name
+            description: "Employee's last name"
+            identifier: "LastName"
+          - name: first_name
+            description: "Employee's first name"
+            identifier: "FirstName"
+          - name: title
+            description: "Job position"
+            identifier: "Title"
+          - name: reports_to
+            description: "Self-referencing foreign key to employee.employee_id for manager"
+            identifier: "ReportsTo"
+          - name: birth_date
+            description: "Employee date of birth"
+            identifier: "BirthDate"
+          - name: hire_date
+            description: "Date employee was hired"
+            identifier: "HireDate"
+          - name: address
+            description: "Street address"
+            identifier: "Address"
+          - name: city
+            description: "City of residence"
+            identifier: "City"
+          - name: state
+            description: "State/province"
+            identifier: "State"
+          - name: country
+            description: "Country of residence"
+            identifier: "Country"
+          - name: postal_code
+            description: "Zip/postal code"
+            identifier: "PostalCode"
+          - name: phone
+            description: "Contact phone number"
+            identifier: "Phone"
+          - name: fax
+            description: "Fax number"
+            identifier: "Fax"
+          - name: email
+            description: "Contact email address"
+            identifier: "Email"
+
+      - name: customer
+        description: "Music store customers and their contact information"
+        identifier: "Customer"
+        columns:
+          - name: customer_id
+            description: "Primary key, unique identifier for customer"
+            identifier: "CustomerId"
+          - name: first_name
+            description: "Customer's first name"
+            identifier: "FirstName"
+          - name: last_name
+            description: "Customer's last name"
+            identifier: "LastName"
+          - name: company
+            description: "Associated company"
+            identifier: "Company"
+          - name: address
+            description: "Street address"
+            identifier: "Address"
+          - name: city
+            description: "City of residence"
+            identifier: "City"
+          - name: state
+            description: "State/province"
+            identifier: "State"
+          - name: country
+            description: "Country of residence"
+            identifier: "Country"
+          - name: postal_code
+            description: "Zip/postal code"
+            identifier: "PostalCode"
+          - name: phone
+            description: "Contact phone number"
+            identifier: "Phone"
+          - name: fax
+            description: "Fax number"
+            identifier: "Fax"
+          - name: email
+            description: "Contact email address"
+            identifier: "Email"
+          - name: support_rep_id
+            description: "Foreign key referencing employee.employee_id for assigned support representative"
+            identifier: "SupportRepId"
+
+      - name: invoice_line
+        description: "Line items for each invoice with purchased tracks"
+        identifier: "InvoiceLine"
+        columns:
+          - name: invoice_line_id
+            description: "Primary key, unique identifier for line item"
+            identifier: "InvoiceLineId"
+          - name: invoice_id
+            description: "Foreign key referencing invoice.invoice_id"
+            identifier: "InvoiceId"
+          - name: track_id
+            description: "Foreign key referencing track.track_id"
+            identifier: "TrackId"
+          - name: unit_price
+            description: "Price per unit in USD"
+            identifier: "UnitPrice"
+          - name: quantity
+            description: "Number of units purchased"
+            identifier: "Quantity"
+
+      - name: invoice
+        description: "Customer purchase invoices with billing information"
+        identifier: "Invoice"
+        columns:
+          - name: invoice_id
+            description: "Primary key, unique identifier for invoice"
+            identifier: "InvoiceId"
+          - name: customer_id
+            description: "Foreign key referencing customer.customer_id"
+            identifier: "CustomerId"
+          - name: invoice_date
+            description: "Date and time when invoice was generated"
+            identifier: "InvoiceDate"
+          - name: billing_address
+            description: "Billing street address"
+            identifier: "BillingAddress"
+          - name: billing_city
+            description: "Billing city"
+            identifier: "BillingCity"
+          - name: billing_state
+            description: "Billing state/province"
+            identifier: "BillingState"
+          - name: billing_country
+            description: "Billing country"
+            identifier: "BillingCountry"
+          - name: billing_postal_code
+            description: "Billing zip/postal code"
+            identifier: "BillingPostalCode"
+          - name: total
+            description: "Sum of all line items (invoice_line.unit_price * quantity)"
+            identifier: "Total"
