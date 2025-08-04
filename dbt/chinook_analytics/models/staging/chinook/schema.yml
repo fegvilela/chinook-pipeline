@@ -1,12 +1,15 @@
-
 version: 2
 
 models:
-  - name: my_first_dbt_model
-    description: "A starter dbt model"
+  - name: stg_chinook__artists
+    description: "{{ doc('stg_chinook__artists') }}"
     columns:
-      - name: id
-        description: "The primary key for this table"
-        data_tests:
+      - name: artist_id
+        description: "Primary key, unique identifier for each artist"
+        tests:
+          - not_null
           - unique
+      - name: name
+        description: "Artist/band name (cleaned and trimmed)"
+        tests:
           - not_null
