@@ -15,6 +15,7 @@ renamed as (
     select
         -- Primary Key
         "GenreId" as genre_id,
+        {{ dbt_utils.generate_surrogate_key(['"GenreId"']) }} as genre_key,
 
         -- Attributes
         trim("Name") as genre_name,

@@ -15,9 +15,11 @@ renamed as (
     select
         -- Primary Key
         "InvoiceId" as invoice_id,
+        {{ dbt_utils.generate_surrogate_key(['"InvoiceId"']) }} as invoice_key,
 
         -- Foreign Keys
         "CustomerId" as customer_id,
+        {{ dbt_utils.generate_surrogate_key(['"CustomerId"']) }} as customer_key,
 
         -- Attributes
         "InvoiceDate" as invoice_date,

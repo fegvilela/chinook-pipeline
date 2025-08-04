@@ -15,10 +15,13 @@ renamed as (
     select
         -- Primary Key
         "InvoiceLineId" as invoice_line_id,
+        {{ dbt_utils.generate_surrogate_key(['"InvoiceLineId"']) }} as invoice_line_key,
 
         -- Foreign Keys
         "InvoiceId" as invoice_id,
         "TrackId" as track_id,
+        {{ dbt_utils.generate_surrogate_key(['"InvoiceId"']) }} as invoice_key,
+        {{ dbt_utils.generate_surrogate_key(['"TrackId"']) }} as track_key,
 
         -- Measures
         "UnitPrice" as unit_price,
@@ -26,8 +29,8 @@ renamed as (
         ("UnitPrice" * "Quantity") as line_item_amount,
 
         -- Metadata
-        current_timestamp as dbt_loaded_at,
-        {{ dbt_utils.generate_surrogate_key(['"InvoiceLineId"']) }} as invoice_line_key
+        current_timestamp as dbt_loaded_at
+
 
     from source
 
@@ -47,12 +50,14 @@ deduped as (
 
 select
     invoice_line_id,
+    invoice_line_key,
     invoice_id,
+    invoice_key,
     track_id,
+    track_key,
     unit_price,
     quantity,
     line_item_amount,
-    dbt_loaded_at,
-    invoice_line_key
+    dbt_loaded_at
 from deduped
 where row_num = 1
