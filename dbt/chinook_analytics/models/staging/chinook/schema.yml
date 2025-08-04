@@ -2,14 +2,285 @@ version: 2
 
 models:
   - name: stg_chinook__artists
-    description: "{{ doc('stg_chinook__artists') }}"
+    description: "Cleaned and standardized artists data from Chinook database"
     columns:
       - name: artist_id
-        description: "Primary key, unique identifier for each artist"
+        description: "Primary key identifier for each artist"
         tests:
           - not_null
           - unique
-      - name: name
-        description: "Artist/band name (cleaned and trimmed)"
+      - name: artist_name
+        description: "Name of the artist/band (trimmed)"
         tests:
           - not_null
+      - name: dbt_loaded_at
+        description: "Timestamp when this record was loaded by dbt"
+
+  - name: stg_chinook__albums
+    description: "Cleaned and standardized albums data from Chinook database"
+    columns:
+      - name: album_id
+        description: "Primary key identifier for each album"
+        tests:
+          - not_null
+          - unique
+      - name: album_title
+        description: "Title of the album (trimmed)"
+        tests:
+          - not_null
+      - name: artist_id
+        description: "Foreign key referencing stg_chinook__artists"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_chinook__artists')
+              field: artist_id
+      - name: dbt_loaded_at
+        description: "Timestamp when this record was loaded by dbt"
+
+  - name: stg_chinook__tracks
+    description: "Cleaned and standardized tracks data from Chinook database"
+    columns:
+      - name: track_id
+        description: "Primary key identifier for each track"
+        tests:
+          - not_null
+          - unique
+      - name: track_name
+        description: "Name of the track (trimmed)"
+        tests:
+          - not_null
+      - name: album_id
+        description: "Foreign key referencing stg_chinook__albums"
+        tests:
+          - relationships:
+              to: ref('stg_chinook__albums')
+              field: album_id
+      - name: media_type_id
+        description: "Foreign key referencing stg_chinook__media_types"
+        tests:
+          - relationships:
+              to: ref('stg_chinook__media_types')
+              field: media_type_id
+      - name: genre_id
+        description: "Foreign key referencing stg_chinook__genres"
+        tests:
+          - relationships:
+              to: ref('stg_chinook__genres')
+              field: genre_id
+      - name: composer
+        description: "Person who composed the track"
+      - name: duration_ms
+        description: "Duration of the track in milliseconds"
+      - name: bytes
+        description: "Size of the track in bytes"
+      - name: unit_price
+        description: "Price of the track in USD"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 20
+      - name: dbt_loaded_at
+        description: "Timestamp when this record was loaded by dbt"
+
+  - name: stg_chinook__media_types
+    description: "Cleaned and standardized media types data from Chinook database"
+    columns:
+      - name: media_type_id
+        description: "Primary key identifier for each media type"
+        tests:
+          - not_null
+          - unique
+      - name: media_type_name
+        description: "Name of the media format (trimmed)"
+        tests:
+          - not_null
+      - name: dbt_loaded_at
+        description: "Timestamp when this record was loaded by dbt"
+
+
+  - name: stg_chinook__genres
+    description: "Cleaned and standardized genres data from Chinook database"
+    columns:
+      - name: genre_id
+        description: "Primary key identifier for each genre"
+        tests:
+          - not_null
+          - unique
+      - name: genre_name
+        description: "Name of the genre (trimmed)"
+        tests:
+          - not_null
+      - name: dbt_loaded_at
+        description: "Timestamp when this record was loaded by dbt"
+
+  - name: stg_chinook__employees
+    description: "Cleaned and standardized employees data from Chinook database"
+    columns:
+      - name: employee_id
+        description: "Primary key identifier for each employee"
+        tests:
+          - not_null
+          - unique
+      - name: last_name
+        description: "Employee's last name (trimmed)"
+        tests:
+          - not_null
+      - name: first_name
+        description: "Employee's first name (trimmed)"
+        tests:
+          - not_null
+      - name: title
+        description: "Employee's job title"
+      - name: reports_to
+        description: "Manager's employee_id (self-referencing)"
+        tests:
+          - relationships:
+              to: ref('stg_chinook__employees')
+              field: employee_id
+      - name: birth_date
+        description: "Employee's birth date"
+      - name: hire_date
+        description: "Date when employee was hired"
+        tests:
+          - not_null
+      - name: address
+        description: "Employee's street address"
+      - name: city
+        description: "Employee's city"
+      - name: state
+        description: "Employee's state/province"
+      - name: country
+        description: "Employee's country"
+      - name: postal_code
+        description: "Employee's postal code"
+      - name: phone
+        description: "Employee's phone number"
+      - name: fax
+        description: "Employee's fax number"
+      - name: email
+        description: "Employee's email address (lowercased and trimmed)"
+        tests:
+          - not_null
+      - name: dbt_loaded_at
+        description: "Timestamp when this record was loaded by dbt"
+
+  - name: stg_chinook__customers
+    description: "Cleaned and standardized customers data from Chinook database"
+    columns:
+      - name: customer_id
+        description: "Primary key identifier for each customer"
+        tests:
+          - not_null
+          - unique
+      - name: first_name
+        description: "Customer's first name (trimmed)"
+        tests:
+          - not_null
+      - name: last_name
+        description: "Customer's last name (trimmed)"
+        tests:
+          - not_null
+      - name: company
+        description: "Customer's company name"
+      - name: address
+        description: "Customer's street address"
+      - name: city
+        description: "Customer's city"
+      - name: state
+        description: "Customer's state/province"
+      - name: country
+        description: "Customer's country"
+      - name: postal_code
+        description: "Customer's postal code"
+      - name: phone
+        description: "Customer's phone number"
+      - name: fax
+        description: "Customer's fax number"
+      - name: email
+        description: "Customer's email address (lowercased and trimmed)"
+      - name: support_rep_id
+        description: "Foreign key referencing stg_chinook__employees"
+        tests:
+          - relationships:
+              to: ref('stg_chinook__employees')
+              field: employee_id
+      - name: dbt_loaded_at
+        description: "Timestamp when this record was loaded by dbt"
+
+  - name: stg_chinook__invoices
+    description: "Cleaned and standardized invoices data from Chinook database"
+    columns:
+      - name: invoice_id
+        description: "Primary key identifier for each invoice"
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        description: "Foreign key referencing stg_chinook__customers"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_chinook__customers')
+              field: customer_id
+      - name: invoice_date
+        description: "Date and time when invoice was created"
+        tests:
+          - not_null
+      - name: billing_address
+        description: "Billing street address"
+      - name: billing_city
+        description: "Billing city"
+      - name: billing_state
+        description: "Billing state/province"
+      - name: billing_country
+        description: "Billing country"
+      - name: billing_postal_code
+        description: "Billing postal code"
+      - name: total_amount
+        description: "Total amount of the invoice in USD"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: dbt_loaded_at
+        description: "Timestamp when this record was loaded by dbt"
+
+  - name: stg_chinook__invoice_lines
+    description: "Cleaned and standardized invoice line items data from Chinook database"
+    columns:
+      - name: invoice_line_id
+        description: "Primary key identifier for each invoice line item"
+        tests:
+          - not_null
+          - unique
+      - name: invoice_id
+        description: "Foreign key referencing stg_chinook__invoices"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_chinook__invoices')
+              field: invoice_id
+      - name: track_id
+        description: "Foreign key referencing stg_chinook__tracks"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_chinook__tracks')
+              field: track_id
+      - name: unit_price
+        description: "Price per unit in USD"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+      - name: quantity
+        description: "Quantity purchased"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
+      - name: line_item_amount
+        description: "Calculated amount (unit_price * quantity)"
+      - name: dbt_loaded_at
+        description: "Timestamp when this record was loaded by dbt"
