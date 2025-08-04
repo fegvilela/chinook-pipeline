@@ -1,0 +1,91 @@
+version: 2
+
+models:
+  - name: fact_invoices
+    description: "Tabela fato incremental de linhas de faturamento com relacionamentos dimensionais"
+    columns:
+      - name: invoice_info_key
+        description: "Chave substituta composta (invoice_line_id + invoice_id)"
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_key
+        description: "Chave substituta do cliente (FK para dim_customer)"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_key
+              severity: warn
+
+      - name: employee_key
+        description: "Chave substituta do funcionário atendente (FK para dim_employee)"
+        tests:
+          - relationships:
+              to: ref('dim_employees')
+              field: employee_key
+              severity: warn
+
+      - name: date_key
+        description: "Chave substituta da data (FK para dim_date)"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date_key
+              severity: warn
+
+      - name: track_key
+        description: "Chave substituta da faixa musical (FK para dim_track)"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_tracks')
+              field: track_key
+              severity: warn
+
+      - name: invoice_line_id
+        description: "ID original da linha da fatura (business key)"
+        tests:
+          - not_null
+
+      - name: invoice_id
+        description: "ID original da fatura (business key)"
+        tests:
+          - not_null
+
+      - name: quantity
+        description: "Quantidade vendida do item"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
+              max_value: 100
+              severity: warn
+
+      - name: unit_price
+        description: "Preço unitário do item em USD"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0.99
+              max_value: 20.00
+              severity: warn
+
+      - name: total_amount
+        description: "Valor total calculado (quantity × unit_price)"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              severity: warn
+          - dbt_utils.expression_is_true:
+              expression: "total_amount = (quantity * unit_price)"
+              severity: error
+
+      - name: dbt_loaded_at
+        description: "Timestamp de quando o registro foi carregado pelo dbt"
+
+      - name: dbt_invocation_id
+        description: "ID da execução do dbt que carregou este registro"
