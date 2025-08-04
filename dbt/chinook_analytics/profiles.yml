@@ -14,7 +14,7 @@ chinook_analytics:
 
       # Search path for sources (transactional schema first)
       search_path: "{{ env_var('TRANSACTIONAL_SCHEMA') }}"
-      threads: 4
+      threads: 1
       keepalives_idle: 0 # For connection stability
 
       # Optional performance tuning
