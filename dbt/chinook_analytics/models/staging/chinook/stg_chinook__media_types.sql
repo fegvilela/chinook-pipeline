@@ -15,7 +15,6 @@ renamed as (
     select
         -- Primary Key
         "MediaTypeId" as media_type_id,
-        {{ dbt_utils.generate_surrogate_key(['"MediaTypeId"']) }} as media_type_key,
 
         -- Attributes
         trim("Name") as media_type_name,

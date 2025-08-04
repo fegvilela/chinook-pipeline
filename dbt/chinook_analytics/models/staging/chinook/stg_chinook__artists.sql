@@ -16,7 +16,6 @@ renamed as (
     select
         -- Primary Key
         "ArtistId" as artist_id,
-        {{ dbt_utils.generate_surrogate_key(['"ArtistId"']) }} as artist_key,
 
         -- Attributes
         "Name" as artist_name,

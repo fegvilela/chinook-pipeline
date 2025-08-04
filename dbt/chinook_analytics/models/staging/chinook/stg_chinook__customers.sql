@@ -15,7 +15,6 @@ renamed as (
     select
         -- Primary Key
         "CustomerId" as customer_id,
-        {{ dbt_utils.generate_surrogate_key(['"CustomerId"']) }} as customer_key,
 
         -- Attributes
         trim("FirstName") as first_name,
@@ -32,7 +31,6 @@ renamed as (
 
         -- Foreign Keys -> employees table
         "SupportRepId" as support_rep_id,
-        {{ dbt_utils.generate_surrogate_key(['"SupportRepId"']) }} as employee_key,
 
         -- Metadata
         current_timestamp as dbt_loaded_at
@@ -55,7 +53,6 @@ deduped as (
 
 select
     customer_id,
-    customer_key,
     first_name,
     last_name,
     company,

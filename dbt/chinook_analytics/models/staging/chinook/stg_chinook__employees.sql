@@ -15,7 +15,6 @@ renamed as (
     select
         -- Primary Key
         "EmployeeId" as employee_id,
-        {{ dbt_utils.generate_surrogate_key(['"EmployeeId"']) }} as employee_key,
 
         -- Attributes
         trim("LastName") as last_name,

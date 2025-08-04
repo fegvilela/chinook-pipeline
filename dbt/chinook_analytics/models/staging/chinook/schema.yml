@@ -280,7 +280,5 @@ models:
           - not_null
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: 1
-      - name: line_item_amount
-        description: "Calculated amount (unit_price * quantity)"
       - name: dbt_loaded_at
         description: "Timestamp when this record was loaded by dbt"
