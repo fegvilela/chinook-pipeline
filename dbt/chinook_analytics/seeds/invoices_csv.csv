@@ -1,0 +1,6 @@
+BillingAddress,BillingCity,BillingCountry,BillingPostalCode,BillingState,CustomerId,InvoiceDate,InvoiceId,Total
+'319N.FrancesStreet','Madison','Brazil','53703','WI',25,'2008-03-06 00:00:00',101,100.2
+'194AChainLakeDrive','Halifax','Australia','B3S1C5','NS',31,'2007-03-09 00:00:00',102,17.9
+
+
+

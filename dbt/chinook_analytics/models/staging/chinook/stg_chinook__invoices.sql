@@ -4,12 +4,19 @@
   )
 }}
 
-with source as (
+with source_db as (
 
-    select * from {{ source('chinook', 'invoice') }}
+    select "BillingAddress", "BillingCity", "BillingCountry", "BillingPostalCode", "BillingState", "CustomerId", "InvoiceDate", "InvoiceId", "Total" from {{ source('chinook', 'invoice') }}
 
 ),
-
+source_csv as (
+    select "BillingAddress", "BillingCity", "BillingCountry", "BillingPostalCode", "BillingState", "CustomerId", "InvoiceDate"::timestamp, "InvoiceId", "Total" from {{ ref('invoices_csv') }}
+),
+union_all as (
+  select * from source_db
+  union all
+  select * from source_csv
+),
 renamed as (
 
     select
@@ -31,8 +38,9 @@ renamed as (
         -- Metadata
         current_timestamp as dbt_loaded_at
 
-    from source
+    from union_all
 
 )
 
 select * from renamed
+

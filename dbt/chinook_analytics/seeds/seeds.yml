@@ -1,0 +1,75 @@
+version: 2
+
+sources:
+  - name: chinook_csv
+    description: "Source for CSV-loaded invoice data"
+    schema: "{{ target.schema }}" # Uses the target schema defined in profiles.yml
+    tables:
+      - name: invoices_csv
+        description: "Invoice data loaded from CSV files"
+        schema: "{{ target.schema }}"
+        columns:
+          - name: InvoiceId
+            quote: true
+            description: "Unique identifier for the invoice"
+            data_type: integer
+            data_tests:
+              - unique
+              - not_null
+
+          - name: CustomerId
+            quote: true
+            description: "Identifier of the customer who placed the order"
+            data_type: integer
+            data_tests:
+              - not_null
+
+          - name: InvoiceDate
+            quote: true
+            description: "Date and time when the invoice was created"
+            data_type: timestamp
+            data_tests:
+              - not_null
+
+          - name: BillingAddress
+            quote: true
+            description: "Street address for billing purposes"
+            data_type: text
+            data_tests:
+              - not_null
+
+          - name: BillingCity
+            quote: true
+            description: "City for billing purposes"
+            data_type: text
+            data_tests:
+              - not_null
+
+          - name: BillingCountry
+            quote: true
+            description: "Country for billing purposes"
+            data_type: text
+            data_tests:
+              - not_null
+
+          - name: BillingPostalCode
+            quote: true
+            description: "Postal/ZIP code for billing address"
+            data_type: text # Using text to preserve formats like 'B3S 1C5'
+            data_tests:
+              - not_null
+
+          - name: BillingState
+            quote: true
+            description: "State/Province/Region for billing address"
+            data_type: text
+            data_tests:
+              - not_null
+
+          - name: Total
+            quote: true
+            description: "Sum of all line items"
+            data_type: float
+            data_tests:
+              - dbt_expectations.expect_column_values_to_be_between:
+                  min_value: 0.99

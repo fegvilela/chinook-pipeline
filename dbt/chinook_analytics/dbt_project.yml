@@ -21,6 +21,10 @@ clean-targets: # directories to be removed by `dbt clean`
   - "target"
   - "dbt_packages"
 
+seeds:
+  chinook_analytics:
+    +quote_columns: true
+
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 
