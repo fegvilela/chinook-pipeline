@@ -98,8 +98,6 @@ docker-compose exec dagster pytest
 - **Containerized** environment
 - **Daily automation** with error handling
 
-
-
 ---
 
 # Dimensional Star Schema Modeling - Chinook Database
@@ -108,18 +106,18 @@ docker-compose exec dagster pytest
 
 ### fact_invoice
 
-| Column           | Type    | Description                     | Relationship          |
-| ---------------- | ------- | ------------------------------- | --------------------- |
-| invoice_line_key | PK      | Surrogate key for invoice line  | -                     |
-| customer_key     | FK      | Customer key                    | → dim_customer        |
-| employee_key     | FK      | Support rep key                 | → dim_employee        |
-| date_key         | FK      | Date key                        | → dim_date            |
-| track_key        | FK      | Music track key                 | → dim_track           |
-| invoice_line_id  | INT     | Original line ID (business key) | -                     |
-| invoice_id       | INT     | Original invoice ID             | -                     |
-| quantity         | INT     | Quantity sold                   | -                     |
-| unit_price       | DECIMAL | Unit price                      | -                     |
-| total_amount     | DECIMAL | Total (quantity × unit_price)   | -                     |
+| Column           | Type    | Description                     | Relationship   |
+| ---------------- | ------- | ------------------------------- | -------------- |
+| invoice_line_key | PK      | Surrogate key for invoice line  | -              |
+| customer_key     | FK      | Customer key                    | → dim_customer |
+| employee_key     | FK      | Support rep key                 | → dim_employee |
+| date_key         | FK      | Date key                        | → dim_date     |
+| track_key        | FK      | Music track key                 | → dim_track    |
+| invoice_line_id  | INT     | Original line ID (business key) | -              |
+| invoice_id       | INT     | Original invoice ID             | -              |
+| quantity         | INT     | Quantity sold                   | -              |
+| unit_price       | DECIMAL | Unit price                      | -              |
+| total_amount     | DECIMAL | Total (quantity × unit_price)   | -              |
 
 ## Implemented Changes:
 
@@ -228,8 +226,8 @@ GROUP BY f.invoice_id
 
 > **Note:** All primary keys (PK) are dbt-generated surrogate keys.
 
-
-
 ## Notes on fact implementation
 
 The invoces fact is incremental, based on the `invoice_info_key` as unique key, that's a surrogate key composed by `invoice_id` and `invoice_line_id`. The incremental strategy chosen was the `delete+insert`, as `merge` option is not available for the yugabyte database ([link](https://docs.yugabyte.com/preview/develop/pg15-features/#coming-soon)), that would be the best one for this case, as we wanted to insert new rows and add the updates, but `delete+insert` ensures updated records are fully replaced.
+
+`invoice_info_key` was chosen instead of `invoice_id` because it enables `1 - n` relationships with dimension tables, such as `dim_tracks`
