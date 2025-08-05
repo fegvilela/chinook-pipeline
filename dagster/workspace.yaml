@@ -1,6 +1,9 @@
 load_from:
-  # Each entry here corresponds to a service in the docker-compose file that exposes user code.
+  # - python_file:
+  #     relative_path: "dagster_chinook/definitions.py"
+  #     working_directory: /opt/dagster/app
+  #     location_name: "dagster_chinook"
   - grpc_server:
       host: dagster_user_code
       port: 4000
-      location_name: "example_user_code"
+      location_name: "user_code_grpc"

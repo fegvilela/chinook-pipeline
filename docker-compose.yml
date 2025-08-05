@@ -53,7 +53,6 @@ services:
       dockerfile: ./Dockerfile_user_code
     container_name: dagster_user_code
     image: dagster_user_code_image
-    restart: always
     volumes:
       - ./dbt:/opt/dagster/dbt
       - ./dagster:/opt/dagster/app
@@ -62,6 +61,17 @@ services:
       DAGSTER_POSTGRES_PASSWORD: "postgres_password"
       DAGSTER_POSTGRES_DB: "postgres_db"
       DAGSTER_CURRENT_IMAGE: "dagster_user_code_image"
+      DBT_PROFILES_DIR: ${CONTAINER_PROJECT_DIR}/${PROJECT_NAME}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      TRANSACTIONAL_SCHEMA: ${TRANSACTIONAL_SCHEMA}
+      ANALYTICAL_SCHEMA: ${ANALYTICAL_SCHEMA}
+      CONTAINER_PROJECT_DIR: ${CONTAINER_PROJECT_DIR}
+      PROJECT_NAME: ${PROJECT_NAME}
+      ROOT_CERT_PATH: ${ROOT_CERT_PATH}
     networks:
       - dbt_dagster_network
 

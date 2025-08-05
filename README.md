@@ -30,8 +30,8 @@ chinook-pipeline/
 
 ### Prerequisites
 
-- Docker 20.10+
-- Docker Compose 2.0+
+- Docker
+- Docker Compose
 
 ### Installation
 
@@ -102,13 +102,18 @@ docker-compose exec dagster pytest
 
 # Dimensional Star Schema Modeling - Chinook Database
 
+![alt text](docs/image_ERD.png)
+Star schema for chinook (simplified diagram)
+
 ## Central Fact Table
 
 ### fact_invoice
 
 | Column           | Type    | Description                     | Relationship   |
 | ---------------- | ------- | ------------------------------- | -------------- |
-| invoice_line_key | PK      | Surrogate key for invoice line  | -              |
+| invoice_info_key | PK      | Surrogate key for invoice + line| -              |
+| invoice_key      | varchar | Surrogate key for invoice       | -              |
+| invoice_line_key | varchar | Surrogate key for invoice line  | -              |
 | customer_key     | FK      | Customer key                    | → dim_customer |
 | employee_key     | FK      | Support rep key                 | → dim_employee |
 | date_key         | FK      | Date key                        | → dim_date     |
@@ -119,9 +124,8 @@ docker-compose exec dagster pytest
 | unit_price       | DECIMAL | Unit price                      | -              |
 | total_amount     | DECIMAL | Total (quantity × unit_price)   | -              |
 
-## Implemented Changes:
 
-1. **New PK for line-item granularity**:
+1. **PK for line-item granularity**:
 
    - `invoice_line_key` as surrogate primary key
    - Enables analysis of individual sale items
@@ -136,7 +140,7 @@ docker-compose exec dagster pytest
 
 ## Impact on Relationships:
 
-1. Fact table now has **invoice line granularity** (not invoice-level)
+1. Fact table has **invoice line granularity** (not invoice-level)
 2. All metrics (`quantity`, `unit_price`) are naturally line-items
 3. Aggregate queries should use `invoice_id` for document-level analysis
 
@@ -231,3 +235,12 @@ GROUP BY f.invoice_id
 The invoces fact is incremental, based on the `invoice_info_key` as unique key, that's a surrogate key composed by `invoice_id` and `invoice_line_id`. The incremental strategy chosen was the `delete+insert`, as `merge` option is not available for the yugabyte database ([link](https://docs.yugabyte.com/preview/develop/pg15-features/#coming-soon)), that would be the best one for this case, as we wanted to insert new rows and add the updates, but `delete+insert` ensures updated records are fully replaced.
 
 `invoice_info_key` was chosen instead of `invoice_id` because it enables `1 - n` relationships with dimension tables, such as `dim_tracks`
+
+## Notes on data enrichment with Streaming Pipelines consuming from REST API
+
+When implementing a streaming solution that consumes data from a REST API, alternatives like Apache Kafka, Apache Flink, or AWS Kinesis are often more suitable than Dagster or dbt. These tools are designed for real-time data processing, offering low-latency ingestion, event-driven processing, and scalability. For instance, Kafka can act as a message broker to buffer API data, while Flink or Spark Streaming can process it in real time. Lightweight frameworks like FastAPI with WebSockets or serverless solutions (AWS Lambda, Google Cloud Functions) can also be used for near-real-time polling of APIs, depending on the use case.
+
+Dagster and dbt, however, are not ideal for streaming because they are primarily batch-oriented frameworks. Dagster focuses on orchestrating scheduled data pipelines, while dbt specializes in transforming batch-loaded data in warehouses. Neither supports true event-driven processing or low-latency streaming natively. While Dagster can trigger pipelines frequently (e.g., every minute), it still introduces delays and overhead compared to dedicated streaming tools. For real-time use cases, leveraging purpose-built streaming technologies ensures better performance and scalability.
+
+![alt text](docs/image.png)
+Streaming architecture (simplified diagram)
